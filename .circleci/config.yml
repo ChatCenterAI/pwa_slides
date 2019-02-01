@@ -1,0 +1,28 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: circleci/node:8
+
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: Remove node-gyp
+          command: rm -rf ~/.node-gyp
+      - run:
+          name: Reinstall node-gyp
+          command: sudo npm install -g node-gyp --unsafe-perm
+      - run:
+          name: Install grpc
+          command: sudo npm install -g grpc --unsafe-perm
+      - run:
+          name: Install firebase-tools
+          command: sudo npm install -g firebase-tools --unsafe-perm
+      - deploy:
+          name: Deploy Code
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              sh ./script/deploy_code.sh
+            fi
